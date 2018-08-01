@@ -5,6 +5,7 @@ import (
 	// 另外一个msgpack的包
 	"development/msgpack-demo/utils"
 	// "flag"
+	"bytes"
 	"github.com/vmihailenco/msgpack"
 	"strconv"
 	"time"
@@ -71,10 +72,15 @@ func redis_unpck() error {
 
 	fmt.Println(msgComb)
 	// 对任务信息进行msgpack解码
-	// var jsonMsgComb interface{}
-	// var jsonMsgComb map[interface{}]interface{}
+
 	var jsonMsgComb VideoCreativeComb
-	err := msgpack.Unmarshal([]byte(msgComb), &jsonMsgComb)
+	//use msgpack tag
+	// err := msgpack.Unmarshal([]byte(msgComb), &jsonMsgComb)
+	//use json tag for msgpack
+	msgBuf := bytes.NewBuffer([]byte(msgComb))
+	dec := msgpack.NewDecoder(msgBuf)
+	dec = dec.UseJSONTag(true)
+	err := dec.Decode(&jsonMsgComb)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -129,19 +135,19 @@ type ElemValue struct {
 
 // 视频创意组合
 type VideoCreativeComb struct {
-	CreativeID         string  `msgpack:"creative_id"`
-	SizeID             string  `msgpack:"size_id"`
-	AdvertiserID       string  `msgpack:"advertiser_id"`
-	CombinationID      string  `msgpack:"combination_id"`
-	FileType           string  `msgpack:"file_type"`
-	Height             int32   `msgpack:"height"`
-	Width              int32   `msgpack:"width"`
-	VideoBitRate       int32   `msgpack:"video_bit_rate"`
-	AudioBitRate       int32   `msgpack:"audio_bit_rate"`
-	Sar                float64 `msgpack:"sar_pixel"`
-	VideoCombinationID string  `msgpack:"dynamic_combination_id"`
-	Version            string  `msgpack:"version"`
-	AudioEnc           string  `msgpack:"audio_encoder"` // 添加字段
+	CreativeID         string  `json:"creative_id"`
+	SizeID             string  `json:"size_id"`
+	AdvertiserID       string  `json:"advertiser_id"`
+	CombinationID      string  `json:"combination_id"`
+	FileType           string  `json:"file_type"`
+	Height             int32   `json:"height"`
+	Width              int32   `json:"width"`
+	VideoBitRate       int32   `json:"video_bit_rate"`
+	AudioBitRate       int32   `json:"audio_bit_rate"`
+	Sar                float64 `json:"sar_pixel"`
+	VideoCombinationID string  `json:"dynamic_combination_id"`
+	Version            string  `json:"version"`
+	AudioEnc           string  `json:"audio_encoder"` // 添加字段
 	elements           []string
 }
 
